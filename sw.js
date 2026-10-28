@@ -1,5 +1,5 @@
 // network-first: קודם רשת, ואם אין רשת - מהמטמון. בקשות ל-/api לא נשמרות אף פעם.
-const CACHE = "joke-v1";
+const CACHE = "joke-v2";
 
 const PRECACHE = [
   "/",

@@ -1,7 +1,7 @@
 # MILESTONES: בדיחה בלחיצה
 כלל: בסוף כל Milestone ה-AI עוצר, וממתין לבדיקה ולאישור מפורש שלי לפני שהוא ממשיך.
 
-שלושה Milestones, כשעתיים בסך הכל. את המפתחות של OpenAI אף פעם לא נותנים ל-Claude: מפתח ה-production עובר ישר מ-OpenAI ל-Vercel, ומפתח ה-dev מודבק ביד ב-.env.local.
+ארבעה Milestones. את המפתחות של OpenAI ושל Supabase אף פעם לא נותנים ל-Claude: מפתחות ה-production עוברים ישר ל-Vercel, ומפתחות ה-dev מודבקים ביד ב-.env.local.
 
 איפה מריצים: הבחירה שלי. אפשר לבדוק כל Milestone בכתובת של Vercel אחרי push, ואפשר גם להריץ במחשב עם vercel dev. הקוד זהה בשני המקרים.
 
@@ -69,3 +69,52 @@
   3. בתוך האפליקציה המותקנת מגיעה בדיחה חדשה בכל לחיצה.
   4. ב-Application ואז Cache Storage אין אף כתובת של /api.
   5. שינוי קטן בטקסט, push, ורענון: השינוי מופיע.
+
+## Milestone 4: האפליקציה זוכרת
+- המטרה: כל בדיחת AI נשמרת ב-Supabase. אפשר לצחוק על בדיחה, ויש רשימה של הבדיחות הכי מצחיקות.
+- כלל: רק הפונקציות בתיקיית api מדברות עם Supabase. הדף מדבר רק עם /api. המפתח הסודי לא מגיע לדפדפן ולא ל-Claude.
+- מה רואים בדף:
+  - מתחת לכל בדיחת AI: כפתור "צחקתי" עם מונה. אחרי לחיצה הכפתור ננעל.
+  - רשימת "הכי מצחיקות": חמש הבדיחות עם הכי הרבה צחוקים, רק כאלה עם צחוק אחד לפחות. היא נטענת עם הדף ומתעדכנת אחרי כל צחוק, בלי polling.
+- הטבלה, דרך המחבר של Supabase:
+  - אם יש יותר מפרויקט אחד, Claude שואל באיזה לעבוד.
+  - migration בשם `create_jokes`, עם הטבלה `public.jokes` ובה חמש עמודות:
+    - `id` מסוג uuid, מפתח ראשי, ברירת מחדל `gen_random_uuid()`.
+    - `created_at` מסוג timestamptz, ברירת מחדל `now()`.
+    - `topic` מסוג text.
+    - `text` מסוג text, חובה.
+    - `laughs` מסוג integer, חובה, ברירת מחדל 0.
+- הנעילה, כדי שרק השרת ייגש לטבלה:
+  - RLS מופעל, בלי אף policy.
+  - `grant select, insert, update` על הטבלה ל-`service_role` בלבד.
+  - `revoke all` מ-`anon` ומ-`authenticated`.
+- ספירת הצחוקים, כדי ששתי לחיצות באותו רגע לא ידרסו זו את זו:
+  - הפונקציה `public.add_laugh(joke_id uuid)`: מוסיפה 1 למונה בעדכון אחד, ומחזירה את המספר החדש.
+  - בתוכה: `security invoker`, ‏`search_path` ריק, ושמות מלאים כמו `public.jokes`.
+  - הרשאות: `revoke execute` מ-`public`, ‏`anon` ו-`authenticated`, ו-`grant execute` ל-`service_role`.
+- עצירה ראשונה, סביב ה-SQL:
+  - ה-SQL נשמר גם כקובץ db/create_jokes.sql, ומוצג לי לפני ההרצה.
+  - אחרי ההרצה: `get_advisors`, הסבר בעברית מה נמצא, ועצירה. אני בודק שהטבלה נעולה.
+- הקוד בשרת:
+  - לקוח אחד בקובץ lib/supabase.js, מהחבילה `@supabase/supabase-js`, ב-dependencies של package.json. הכתובת מ-`process.env.SUPABASE_URL`, והמפתח מ-`process.env.SUPABASE_SECRET_KEY`.
+  - api/joke.js שומרת כל בדיחת AI בטבלה, ומחזירה `{ "joke": "...", "id": "..." }`. אם השמירה נכשלת, הבדיחה עדיין מגיעה למשתמש עם `id: null`, והשגיאה נרשמת ב-console.error.
+  - api/laugh.js מקבלת POST עם `{ "id": "..." }`, בודקת שזה uuid, וקוראת ל-`add_laugh` דרך `rpc`. מחזירה `{ "laughs": n }`.
+  - api/top.js מחזירה את רשימת "הכי מצחיקות": `{ "jokes": [ { "id", "topic", "text", "laughs" } ] }`.
+  - גרסת ה-service worker עולה, כדי שהטלפון יקבל את הדף החדש.
+- ביד, לפני הדחיפה:
+  - ב-Supabase, ב-Project Settings ואז API Keys: יוצרים מפתח secret.
+  - ב-Vercel, ב-Environment Variables: `SUPABASE_SECRET_KEY` מסוג Secret, ו-`SUPABASE_URL` (כתובת הפרויקט, לא סוד). שניהם ב-Production וב-Preview.
+  - הרצה מקומית: מוסיפים את שניהם ב-.env.local, ביד.
+- עצירה שנייה, לפני הדחיפה: Claude עוצר, ואני שם את המפתח הסודי ב-Vercel. Claude לא מבקש אותו.
+- התוצר המצופה: צוחקים על בדיחה, והיא עולה ברשימת "הכי מצחיקות".
+- תנאי השלמה (Definition of Done):
+  1. כל בדיחת AI מופיעה כשורה חדשה בטבלה `public.jokes`, עם הנושא והטקסט.
+  2. "צחקתי" מעלה את המונה ב-1, והכפתור ננעל. רענון הדף לא מאפס את המספר בטבלה.
+  3. ברשימת "הכי מצחיקות" עד חמש בדיחות, מהכי הרבה צחוקים, ורק עם צחוק אחד לפחות. אחרי צחוק היא מתעדכנת בלי רענון.
+  4. בלשונית Network: בקשות רק ל-/api/joke, ‏/api/laugh ו-/api/top. אין בקשה ל-supabase.co, ואין בקשות חוזרות לבד.
+  5. חיפוש בקוד הדף (Ctrl+U ואז Ctrl+F) על `supabase` ועל `sb_secret` לא מוצא כלום.
+  6. `get_advisors` לא מחזיר אזהרת אבטחה על `public.jokes` או על `add_laugh`. הודעת המידע "RLS בלי policy" צפויה, כי ככה נעלנו.
+  7. גישה לטבלה ולפונקציה בתפקיד `anon` או `authenticated` נכשלת על הרשאות.
+  8. POST ל-/api/laugh עם id שאינו uuid מחזיר 400, ועם uuid שלא קיים מחזיר 404.
+  9. בלי `SUPABASE_SECRET_KEY` ב-Vercel: הבדיחה עדיין מגיעה, וב-Logs יש שורה אדומה.
+  10. מי שמריץ מקומית: אותה תוצאה ב-localhost.

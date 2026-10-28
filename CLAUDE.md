@@ -18,7 +18,14 @@
 - לא לכתוב ולא לקרוא מפתח בשום קובץ. `.env` ו-`.env.*` חסומים לקריאה ב-`.claude/settings.json`.
 - מפתח ה-production שמור אצלי ב-Vercel (Secret, ב-Production וב-Preview).
 - מפתח ה-dev אני מדביק בעצמי ב-`.env.local`.
-- `.env.example` מכיל רק את השורה `OPENAI_API_KEY=`, בלי ערך ובלי הערות.
+- `.env.example` מכיל רק את השורות `OPENAI_API_KEY=` ו-`SUPABASE_SECRET_KEY=`, בלי ערכים ובלי הערות.
+- המפתח הסודי של Supabase שמור אצלי ב-Vercel (`SUPABASE_SECRET_KEY`, ‏Secret). אותו חוק: לא לבקש, לא לכתוב ולא לקרוא.
+
+## Supabase - שמירה
+- Supabase הוא מקום השמירה (מ-Milestone 4).
+- רק הפונקציות בתיקיית `api` מדברות איתו, דרך לקוח אחד ב-`lib/supabase.js`.
+- הדף מדבר רק עם `/api`. בדף אין כתובת של Supabase, אין מפתח, ואין את החבילה של Supabase.
+- הטבלה נעולה: RLS בלי policy, והרשאות ל-`service_role` בלבד.
 
 ## Git ופריסה
 - ריפו ציבורי: `EyalG1980/joke-app-new-28-10-2026`, ענף main בלבד.
@@ -38,4 +45,4 @@
 ## מודל מומלץ
 - הקמה: Sonnet.
 - Milestone 1 (מסך ועיצוב): Opus.
-- Milestone 2 (GPT-5) ו-Milestone 3 (PWA): Sonnet.
+- Milestone 2 (GPT-5), Milestone 3 (PWA) ו-Milestone 4 (Supabase): Sonnet.
