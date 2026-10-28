@@ -47,8 +47,13 @@
   - בלי מפתח בסביבה: "המפתח: חסר", כמצופה.
 - אין כותרות CORS ואין טיפול ב-OPTIONS.
 
-## השלבים הבאים
-1. push ל-main.
-2. ב-Vercel: ‏New Project, ‏Import לריפו, ‏Framework Preset: Other, ‏Deploy.
-3. ביד: מפתח production בשם `joke-in-a-click` ב-OpenAI, ושמירה ב-Vercel כ-`OPENAI_API_KEY` (Secret, ‏Production ו-Preview), ואז Redeploy.
-4. בדיקה בטלפון לפי תנאי ההשלמה.
+- תוספת: טעינה מוקדמת של ארבעת ציורי הדמות, כדי שמצב שגיאה יציג את הדמות גם בלי רשת.
+
+## פריסה ובדיקה (2026-10-28)
+- הלינק החי: https://joke-app-new-28-10-2026.vercel.app
+- פרויקט Vercel מחובר לריפו, וכל push ל-main נפרס לבד.
+- `OPENAI_API_KEY` שמור ב-Vercel כ-Secret, ב-Production וב-Preview.
+- בכתובת החיה: "חתולים" מחזיר "בדיחה זמנית מהשרת: חתולים. המפתח: נמצא". גוף ריק מחזיר "בלי נושא". GET מחזיר 405.
+- ב-Logs של Vercel: שורה לכל בקשה.
+- בריפו: אין .env ואין .env.local. יש .env.example ו-.claude/settings.json.
+- נבדק בטלפון ואושר על ידי Eyal. **Milestone 1 הושלם.**
