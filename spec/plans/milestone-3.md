@@ -41,3 +41,8 @@
   - ה-manifest הוא JSON תקין, ושלושת קובצי האייקונים קיימים.
   - sw.js עבר בדיקת תחביר, והאירועים שלו נבדקו מול מטמון מדומה: POST ו-GET ל-`/api` לא נוגעים בהם, וגם לא ב-Google Fonts. `/` מגיע מהרשת ונשמר. בלי רשת: `/` חוזר מהמטמון. אף כתובת של `/api` לא נשמרה. מטמון ישן נמחק.
   - חלונית הדפדפן של Claude לא מאפשרת רישום של service worker. לכן הבדיקה של Application ‏(Manifest ו-Cache Storage) נעשית ב-Chrome, בשלב ההרצה.
+
+## פריסה (2026-10-28)
+- push ל-main, ‏Vercel פרס לבד, בלי Redeploy.
+- בכתובת החיה: manifest.webmanifest ‏(application/manifest+json), ‏sw.js ושלושת האייקונים מחזירים 200. הדף מקשר ל-manifest ורושם את sw.js. ‏`/api/joke` מחזיר בדיחה.
+- ממתין לבדיקה של Eyal: Application ב-Chrome, התקנה בטלפון, ותנאי 5.
