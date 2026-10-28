@@ -305,6 +305,11 @@
       error: "לנסות שוב",
     };
 
+    // טוענים מראש את ארבעת הציורים, כדי שהדמות תופיע גם כשהרשת נופלת
+    for (const state of Object.keys(BUTTON_TEXT)) {
+      new Image().src = `assets/mascot-${state}.svg`;
+    }
+
     function setState(state, text) {
       bubble.dataset.state = state;
       mascot.src = `assets/mascot-${state}.svg`;
