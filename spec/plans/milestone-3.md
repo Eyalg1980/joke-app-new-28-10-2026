@@ -46,3 +46,4 @@
 - push ל-main, ‏Vercel פרס לבד, בלי Redeploy.
 - בכתובת החיה: manifest.webmanifest ‏(application/manifest+json), ‏sw.js ושלושת האייקונים מחזירים 200. הדף מקשר ל-manifest ורושם את sw.js. ‏`/api/joke` מחזיר בדיחה.
 - ממתין לבדיקה של Eyal: Application ב-Chrome, התקנה בטלפון, ותנאי 5.
+- נבדק ואושר על ידי Eyal. **Milestone 3 הושלם.**
